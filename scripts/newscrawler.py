@@ -47,7 +47,7 @@ create_page_body = {
         "title": {
       "title": [{ 
           "type": "text", 
-          "text": { "content": headline } }]
+          "text": { "content": headline.text } }]
         }
     },
     "children": [
