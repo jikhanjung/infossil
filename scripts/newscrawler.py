@@ -37,3 +37,36 @@ search_response = requests.post(
     json=search_params, headers=headers)
 
 print(search_response.json())           
+
+search_results = search_response.json()["results"]
+page_id = search_results[0]["id"]
+
+create_page_body = {
+    "parent": { "page_id": page_id },
+    "properties": {
+        "title": {
+      "title": [{ 
+          "type": "text", 
+          "text": { "content": headline } }]
+        }
+    },
+    "children": [
+    {
+      "object": "block",
+      "type": "paragraph",
+      "paragraph": {
+        "rich_text": [{ 
+            "type": "text", 
+            "text": { 
+                "content": abstract.text
+            } 
+        }]
+      }
+    }
+  ]
+}
+
+create_response = requests.post(
+     "https://api.notion.com/v1/pages", 
+     json=create_page_body, headers=headers)
+print(create_response.json())
