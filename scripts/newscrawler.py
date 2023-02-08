@@ -17,22 +17,21 @@ url = 'http://34.64.158.160/marinecroc.html'
 page = requests.get(url)
 #print(page.content)
 soup = BeautifulSoup(page.content, 'html.parser')
-headline = soup.find(id='headline')
-date_posted = soup.find(id='date_posted')
-abstract = soup.find(id='abstract')
-first = soup.find(id='first')
-text = soup.find(id='text')
-journal_references = soup.find(id='journal_references')
+
+key_list = ['headline','date_posted','abstract','first','text','journal_references']
+text_hash = {}
+for k in key_list:
+    text_hash[k] = soup.find(id=k).text
 
 block_list = []
 p_list2 = []
-p_list = text.text.split("\n")
+p_list = text_hash['text'].split("\n")
 for p in p_list:
-    print(p)
+    #print(p)
+    p_list2.append(p)
     if len(p) > 0:
         result = translator.translate_text(p, target_lang="KO")
-        p_list2.append(p)
-        p_list2.append(result.text)
+        p_list2.append(text_hash['result'])
 
 
 for p in p_list2:
