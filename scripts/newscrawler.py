@@ -14,7 +14,8 @@ DEEPL_KEY = config("DEEPL_KEY")
 #print(DEEPL_KEY)
 
 def get_sciencedaily(url):
-    page = requests.get(url)
+    #page = requests.get(url)
+    page = requests.get(url,headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"})
     #print(page.content)
     soup = BeautifulSoup(page.content, 'html.parser')
 
