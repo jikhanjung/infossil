@@ -82,11 +82,11 @@ def translate_text(p_list, target_lang="KO"):
         l_p_list2.append(p)
         if len(p) > 0:
             
-            #trans_papago_p = translate_paragraph_papago(p, target_lang=target_lang)
-            #l_p_list2.append(trans_papago_p)
+            trans_papago_p = translate_paragraph_papago(p, target_lang=target_lang)
+            l_p_list2.append("[파파고]: " + trans_papago_p)
 
             trans_google_p = translate_paragraph_google(p, target_lang=target_lang)
-            l_p_list2.append(trans_google_p)
+            l_p_list2.append("[구글]: " + trans_google_p)
 
             time.sleep(3)
     return l_p_list2
@@ -111,16 +111,20 @@ def format_blocks(p_list2):
 
 translator = deepl.Translator(DEEPL_KEY)
 
-url = 'https://www.sciencedaily.com/releases/2023/02/230207144236.htm'
+url = 'https://www.sciencedaily.com/releases/2023/02/230208125147.htm'
 notion_headers = {'Authorization': f"Bearer {NOTION_KEY}",
            'Content-Type': 'application/json',
            'Notion-Version': '2022-06-28'}
 scidaily_id = "f604567f-9be6-48e0-a31b-42667dec0ae4" # Science Daily page id
 
 
+p_list=[]
+
 text_hash = get_sciencedaily(url)
-p_list = text_hash['text'].split('\n')
+p_list.append(text_hash['headline'])
+p_list.extend(text_hash['text'].split('\n'))
 p_list = translate_text(p_list)
+p_list.append(text_hash['journal_references'])
 block_list = format_blocks(p_list)
 page_id = scidaily_id
 
