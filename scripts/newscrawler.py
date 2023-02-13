@@ -122,6 +122,7 @@ p_list=[]
 
 text_hash = get_sciencedaily(url)
 p_list.append(text_hash['headline'])
+p_list.append(text_hash['date_posted'])
 p_list.extend(text_hash['text'].split('\n'))
 p_list = translate_text(p_list)
 p_list.append(text_hash['journal_references'])
