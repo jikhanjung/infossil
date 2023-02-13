@@ -6,9 +6,9 @@ import os
 import json
 import urllib.request
 import time
-#print(NOTION_KEY)
 import deepl
 import googletrans
+from datetime import datetime
 
 NOTION_KEY = config("NOTION_KEY")
 DEEPL_KEY = config("DEEPL_KEY")
@@ -16,24 +16,25 @@ DEEPL_KEY = config("DEEPL_KEY")
 PAPAGO_ID = config("PAPAGO_ID")
 PAPAGO_SECRET = config("PAPAGO_SECRET")
 
-#print(DEEPL_KEY)
+deepl_translator = deepl.Translator(DEEPL_KEY)
+notion_headers = {'Authorization': f"Bearer {NOTION_KEY}",
+           'Content-Type': 'application/json',
+           'Notion-Version': '2022-06-28'}
+
+scidaily_id = "f604567f-9be6-48e0-a31b-42667dec0ae4" # Science Daily page id
 
 def get_sciencedaily(url):
     #page = requests.get(url)
     page = requests.get(url,headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"})
-    print(url, page.content, page.status_code, page)
+    #print(url, page.content, page.status_code, page)
     soup = BeautifulSoup(page.content, 'html.parser')
 
     key_list = ['headline','date_posted','abstract','first','text','journal_references']
     text_hash = {}
     for k in key_list:
-        print(k)
+        #print(k)
         text_hash[k] = soup.find(id=k).text
     return text_hash
-
-def translate_paragraph(text, target_lang="KO"):
-    result = translator.translate_text(text, target_lang=target_lang)
-    return result.text
 
 def translate_paragraph_papago(text, target_lang="KO"):
     #result = translator.translate_text(text, target_lang=target_lang)
@@ -109,25 +110,7 @@ def format_blocks(p_list2):
         l_block_list.append(block)
     return l_block_list
 
-translator = deepl.Translator(DEEPL_KEY)
-
-notion_headers = {'Authorization': f"Bearer {NOTION_KEY}",
-           'Content-Type': 'application/json',
-           'Notion-Version': '2022-06-28'}
-scidaily_id = "f604567f-9be6-48e0-a31b-42667dec0ae4" # Science Daily page id
-
 n = len(sys.argv)
-
-
-# total arguments
-print("Total arguments passed:", n)
- 
-# Arguments passed
-print("\nName of Python script:", sys.argv[0])
- 
-print("\nArguments passed:", end = " ")
-for i in range(1, n):
-    print(sys.argv[i], end = " ")
 url = ''
 
 if n > 1:
@@ -137,16 +120,26 @@ else:
     print("no url")
     sys.exit()
 
-p_list=[]
+paragraph_list=[]
+
+''' begin time '''
+begin_time = "Begin time: "+ datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 text_hash = get_sciencedaily(url)
-p_list.append(text_hash['headline'])
-p_list.append(text_hash['date_posted'])
-p_list.extend(text_hash['text'].split('\n'))
-p_list = translate_text(p_list)
-p_list.append(text_hash['journal_references'])
-block_list = format_blocks(p_list)
+for k in ['headline','date_posted','abstract','first']:
+    paragraph_list.append(text_hash[k])
+paragraph_list.extend(text_hash['text'].split('\n'))
+paragraph_list = translate_text(paragraph_list)
+paragraph_list.append(text_hash['journal_references'])
+
+''' end time '''
+end_time = "End time: "+ datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+paragraph_list.append(begin_time)
+paragraph_list.append(end_time)
+
+block_list = format_blocks(paragraph_list)
 page_id = scidaily_id
+
 
 create_page_body = {
     "parent": { "page_id": page_id },
@@ -160,20 +153,4 @@ create_page_body = {
     "children": block_list
 }
 
-create_response = requests.post(
-     "https://api.notion.com/v1/pages",
-     json=create_page_body, headers=notion_headers)
-print(create_response.json())
-
-
-"""
-    search_params = {"filter": {"value": "page", "property": "object"}}
-    search_response = requests.post(
-        f'https://api.notion.com/v1/search',
-        json=search_params, headers=headers)
-
-    print(search_response.json())
-
-    search_results = search_response.json()["results"]
-"""
-
+create_response = requests.post("https://api.notion.com/v1/pages",json=create_page_body,headers=notion_headers)
