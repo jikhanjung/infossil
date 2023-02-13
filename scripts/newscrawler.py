@@ -1,4 +1,4 @@
-
+import sys
 from decouple import config
 import requests
 from bs4 import BeautifulSoup
@@ -111,12 +111,31 @@ def format_blocks(p_list2):
 
 translator = deepl.Translator(DEEPL_KEY)
 
-url = 'https://www.sciencedaily.com/releases/2023/02/230208125147.htm'
 notion_headers = {'Authorization': f"Bearer {NOTION_KEY}",
            'Content-Type': 'application/json',
            'Notion-Version': '2022-06-28'}
 scidaily_id = "f604567f-9be6-48e0-a31b-42667dec0ae4" # Science Daily page id
 
+n = len(sys.argv)
+
+
+# total arguments
+print("Total arguments passed:", n)
+ 
+# Arguments passed
+print("\nName of Python script:", sys.argv[0])
+ 
+print("\nArguments passed:", end = " ")
+for i in range(1, n):
+    print(sys.argv[i], end = " ")
+url = ''
+
+if n > 1:
+    url = sys.argv[1] #'''https://www.sciencedaily.com/releases/2023/02/230208125147.htm'
+    print("url: ", url)
+else:
+    print("no url")
+    sys.exit()
 
 p_list=[]
 
@@ -157,3 +176,4 @@ print(create_response.json())
 
     search_results = search_response.json()["results"]
 """
+
