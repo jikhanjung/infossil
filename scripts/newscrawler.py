@@ -128,6 +128,8 @@ begin_time = "Begin time: "+ datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 text_hash = get_sciencedaily(url)
 for k in ['headline','date_posted','abstract','first']:
     paragraph_list.append(text_hash[k])
+paragraph_list.append("("+translate_paragraph_papago(text_hash['date_posted'], target_lang="KO")+" <a href='"+url+"'>사이언스 데일리 기사</a> 번역)")
+#paragraph_list.append(url)
 paragraph_list.extend(text_hash['text'].split('\n'))
 paragraph_list = translate_text(paragraph_list)
 paragraph_list.append(text_hash['journal_references'])
