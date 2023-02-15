@@ -64,27 +64,28 @@ def get_physorg_article(url):
     soup = BeautifulSoup(page_content, 'html.parser')
     article = soup.find(class_='news_article')
     article_info = soup.find(class_='article__info-item')
-    article_main = soup.find(class_='article_main')
-    article_img = soup.find(class_='article_img')
+    article_main = soup.find(class_='article-main')
+    article_img = soup.find(class_='article-img').img['src']   
     article_h1 = soup.find('h1')
 
-    print( article_info.text)
+    #print( article_info.text)
+    #print( article_img)
+    #print( article_h1.text)
     #print( article_main.text)
-    print( article_img)
-    print( article_h1.text)
+    text_hash={}
 
-    exit()
-
-
-    key_list = ['headline','date_posted','abstract','first','text','journal_references']
-    text_hash = {}
-    for k in key_list:
-        print(k)
-        obj = soup.find(id=k)
-        if obj:
-            text_hash[k] = soup.find(id=k).text
-        else:
-            text_hash[k] = ''
+    text_hash['headline'] = article_h1.text
+    text_hash['date_posted'] = article_info.text.strip()
+    text_hash['abstract'] = ''
+    text_hash['first'] = ''
+    l_p_list=[]
+    for p in article_main.text.split('\n'):
+        if len(p.strip()) > 0:
+            l_p_list.append(p.strip())
+            #break
+    text_hash['text'] = "\n".join(l_p_list)
+    text_hash['journal_references'] = ''
+    
     return text_hash    
 
 def translate_paragraph_papago(text, target_lang="KO"):
@@ -176,7 +177,8 @@ paragraph_list=[]
 ''' begin time '''
 begin_time = "Begin time: "+ datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-text_hash = get_sciencedaily_article(url)
+#text_hash = get_sciencedaily_article(url)
+text_hash = get_physorg_article(url)
 if not text_hash:
     print("no text_hash")
     sys.exit()
