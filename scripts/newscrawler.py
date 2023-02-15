@@ -23,7 +23,7 @@ notion_headers = {'Authorization': f"Bearer {NOTION_KEY}",
 
 scidaily_id = "f604567f-9be6-48e0-a31b-42667dec0ae4" # Science Daily page id
 
-def get_sciencedaily(url):
+def get_html_article(url):
     #page = requests.get(url)
     page = requests.get(url,headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"})
     retry_count = 0
@@ -34,8 +34,14 @@ def get_sciencedaily(url):
         if retry_count > 10:
             return None
         time.sleep(10)
-    #print(url, page.content, page.status_code, page)
-    soup = BeautifulSoup(page.content, 'html.parser')
+    return page.content
+
+def get_sciencedaily_article(url):
+    page_content = get_html_article(url)
+    if not page_content:
+        return None
+
+    soup = BeautifulSoup(page_content, 'html.parser')
 
     key_list = ['headline','date_posted','abstract','first','text','journal_references']
     text_hash = {}
@@ -47,6 +53,39 @@ def get_sciencedaily(url):
         else:
             text_hash[k] = ''
     return text_hash
+
+
+def get_physorg_article(url):
+
+    page_content = get_html_article(url)
+    if not page_content:
+        return None
+
+    soup = BeautifulSoup(page_content, 'html.parser')
+    article = soup.find(class_='news_article')
+    article_info = soup.find(class_='article__info-item')
+    article_main = soup.find(class_='article_main')
+    article_img = soup.find(class_='article_img')
+    article_h1 = soup.find('h1')
+
+    print( article_info.text)
+    #print( article_main.text)
+    print( article_img)
+    print( article_h1.text)
+
+    exit()
+
+
+    key_list = ['headline','date_posted','abstract','first','text','journal_references']
+    text_hash = {}
+    for k in key_list:
+        print(k)
+        obj = soup.find(id=k)
+        if obj:
+            text_hash[k] = soup.find(id=k).text
+        else:
+            text_hash[k] = ''
+    return text_hash    
 
 def translate_paragraph_papago(text, target_lang="KO"):
     #result = translator.translate_text(text, target_lang=target_lang)
@@ -137,7 +176,7 @@ paragraph_list=[]
 ''' begin time '''
 begin_time = "Begin time: "+ datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-text_hash = get_sciencedaily(url)
+text_hash = get_sciencedaily_article(url)
 if not text_hash:
     print("no text_hash")
     sys.exit()
