@@ -28,20 +28,24 @@ def get_sciencedaily(url):
     page = requests.get(url,headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"})
     retry_count = 0
     while page.status_code != 200:
-        print("retrying...")
+        print("retrying...",page.status_code)
         page = requests.get(url,headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"})
         retry_count += 1
-        if retry_count > 5:
+        if retry_count > 10:
             return None
-        time.sleep(5)
+        time.sleep(10)
     #print(url, page.content, page.status_code, page)
     soup = BeautifulSoup(page.content, 'html.parser')
 
     key_list = ['headline','date_posted','abstract','first','text','journal_references']
     text_hash = {}
     for k in key_list:
-        #print(k)
-        text_hash[k] = soup.find(id=k).text
+        print(k)
+        obj = soup.find(id=k)
+        if obj:
+            text_hash[k] = soup.find(id=k).text
+        else:
+            text_hash[k] = ''
     return text_hash
 
 def translate_paragraph_papago(text, target_lang="KO"):
