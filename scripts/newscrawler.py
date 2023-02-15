@@ -26,6 +26,14 @@ scidaily_id = "f604567f-9be6-48e0-a31b-42667dec0ae4" # Science Daily page id
 def get_sciencedaily(url):
     #page = requests.get(url)
     page = requests.get(url,headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"})
+    retry_count = 0
+    while page.status_code != 200:
+        print("retrying...")
+        page = requests.get(url,headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"})
+        retry_count += 1
+        if retry_count > 5:
+            return None
+        time.sleep(5)
     #print(url, page.content, page.status_code, page)
     soup = BeautifulSoup(page.content, 'html.parser')
 
@@ -126,6 +134,10 @@ paragraph_list=[]
 begin_time = "Begin time: "+ datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 text_hash = get_sciencedaily(url)
+if not text_hash:
+    print("no text_hash")
+    sys.exit()
+
 for k in ['headline','date_posted','abstract','first']:
     paragraph_list.append(text_hash[k])
 paragraph_list.append("("+translate_paragraph_papago(text_hash['date_posted'], target_lang="KO")+" <a href='"+url+"'>사이언스 데일리 기사</a> 번역)")
