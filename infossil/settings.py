@@ -44,6 +44,7 @@ AUTH_USER_MODEL = 'accounts.CustomUser'
 
 INSTALLED_APPS = [
     'accounts.apps.AccountsConfig',
+    'taxology.apps.TaxologyConfig',
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
