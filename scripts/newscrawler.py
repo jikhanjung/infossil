@@ -173,14 +173,17 @@ else:
     sys.exit()
 
 paragraph_list=[]
+source_name = ''
 
 ''' begin time '''
 begin_time = "Begin time: "+ datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 if url.find('phys.org') > 0:
 #text_hash = get_sciencedaily_article(url)
+    source_name = "Phys.org"
     text_hash = get_physorg_article(url)
 elif url.find('sciencedaily.com') > 0:
+    source_name = "사이언스 데일리"
     text_hash = get_sciencedaily_article(url)
 else:
     print("Can't handle url", url)
@@ -192,7 +195,8 @@ if not text_hash:
 
 for k in ['headline','date_posted','abstract','first']:
     paragraph_list.append(text_hash[k])
-paragraph_list.append("("+translate_paragraph_papago(text_hash['date_posted'], target_lang="KO")+" <a href='"+url+"'>사이언스 데일리 기사</a> 번역)")
+
+paragraph_list.append("("+translate_paragraph_papago(text_hash['date_posted'], target_lang="KO")+" <a href='"+url+"'>" + source_name + " 기사</a> 번역)")
 #paragraph_list.append(url)
 paragraph_list.extend(text_hash['text'].split('\n'))
 #paragraph_list = translate_text(paragraph_list)
