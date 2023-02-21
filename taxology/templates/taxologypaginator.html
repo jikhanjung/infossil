@@ -1,0 +1,25 @@
+{% if page_obj.paginator.num_pages > 0 %}
+<div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a class="btn btn-primary btn-sm" role="button" href="?page=1{%if order_by%}&order_by={{order_by}}{%endif%}{%if filter1%}&filter1={{filter1}}{%endif%}{%if filter2%}&filter2={{filter2}}{%endif%}">처음</a>
+            <a class="btn btn-primary btn-sm" role="button" href="?page={{ page_obj.previous_page_number }}{%if order_by%}&order_by={{order_by}}{%endif%}{%if filter1%}&filter1={{filter1}}{%endif%}{%if filter2%}&filter2={{filter2}}{%endif%}">이전</a>
+        {%else%}
+            <button class="btn btn-secondary btn-sm" role="button" href="#" disabled>처음</button>
+            <button class="btn btn-secondary btn-sm" role="button" href="#" disabled>이전</button>
+        {% endif %}
+
+        <span class="current">
+            {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+            <a class="btn btn-primary btn-sm" role="button" href="?page={{ page_obj.next_page_number }}{%if order_by%}&order_by={{order_by}}{%endif%}{%if filter1%}&filter1={{filter1}}{%endif%}{%if filter2%}&filter2={{filter2}}{%endif%}">다음</a>
+            <a class="btn btn-primary btn-sm" role="button" href="?page={{ page_obj.paginator.num_pages }}{%if order_by%}&order_by={{order_by}}{%endif%}{%if filter1%}&filter1={{filter1}}{%endif%}{%if filter2%}&filter2={{filter2}}{%endif%}">마지막</a>
+        {%else%}
+            <button class="btn btn-secondary btn-sm" role="button" href="#" disabled>다음</button>
+            <button class="btn btn-secondary btn-sm" role="button" href="#" disabled>마지막</button>
+        {% endif %}
+    </span>
+</div>
+{% endif %}

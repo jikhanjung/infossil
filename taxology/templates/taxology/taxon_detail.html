@@ -1,0 +1,27 @@
+{% extends "taxologybase.html" %}
+{% block content %}
+{% load django_bootstrap5 %}
+<h4 class="bd-title p-2 bg-secondary text-light">Taxon details</h4>
+<table class="table table-striped table-sm">
+    <tbody>
+        <tr><th width="150">Taxon</th><td>{{ taxon.name|default_if_none:'' }}</td></tr>
+        <tr><th>Rank</th><td>{{ taxon.get_rank_display }}</td></tr>
+        <tr><th>Author</th><td>{{ taxon.authorship }}</td></tr>
+        <tr><th>Year</th><td>{{ taxon.year }}</td></tr>
+        </tbody>
+</table>
+<div class="container">
+    <div class="row">
+        <div class="col text-center">
+            {% if user_obj %}
+                <a class="btn btn-primary" role="button" href="{% url 'taxon_edit' taxon.id %}">Edit</a>
+                <a class="btn btn-primary" role="button" href="{% url 'taxon_delete' taxon.id %}" onclick="return confirm('정말 삭제하시겠습니까?')">Delete</a>
+            {% else %}
+                <button class="btn btn-primary" role="button" href="#" disabled>Edit</button>
+                <button class="btn btn-primary" role="button" href="#" disabled>Delete</button>
+            {% endif %}
+            <a class="btn btn-primary" role="button" href="{% url 'taxon_list' %}">List</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
