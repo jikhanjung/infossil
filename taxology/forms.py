@@ -13,9 +13,6 @@ class AuthorForm(ModelForm):
         model = Author
         fields = ['firstname_k', 'lastname_k', 'firstname_e', 'lastname_e', 'affiliation', 'is_primary', 'redirect_to', 'remarks']
 
-        widgets = {
-            'redirect_to':  autocomplete.ModelSelect2(url='author_autocomplete',attrs={'style':'width:200px'},forward=['is_primary']),
-        }
 
 
 class ReferenceAuthorForm(ModelForm):
@@ -48,7 +45,13 @@ class ReferenceForm(ModelForm):
 class TaxonForm(ModelForm):
     class Meta:
         model = Taxon
-        fields = ['name', 'rank', 'authorship', 'year']
+        fields = ['name', 'rank', 'parent', 'authorship', 'year', 'sensu', 'remarks']
+        textinput_size=60
+        textarea_cols=60
+        textarea_rows=3
+        widgets = {
+            'remarks': forms.Textarea(attrs={'cols': textarea_cols, 'rows': textarea_rows}),            
+        }
 
 class TaxonAuthorForm(ModelForm):
     class Meta:

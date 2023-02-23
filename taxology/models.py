@@ -303,12 +303,12 @@ class Taxon(models.Model):
 
     name = models.CharField(max_length=200)
     rank = models.CharField(max_length=20,choices=RANK_CHOICES, blank=True)
-    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
     authorship = models.CharField(max_length=200, null=True, blank=True)
     author = models.CharField(max_length=200, null=True, blank=True)
     year = models.IntegerField(null=True, blank=True)
     sensu = models.CharField(max_length=200, null=True, blank=True)
-    remarks = models.CharField(max_length=500, null=True, blank=True)
+    remarks = models.TextField(null=True, blank=True)
     def __str__(self):
         return self.name
 

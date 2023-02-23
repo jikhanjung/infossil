@@ -1,0 +1,59 @@
+{% extends "taxologybase.html" %}
+{% block content %}
+{% load django_bootstrap5 %}
+<h4 class="bd-title p-2 bg-secondary text-light">Author list</h4>
+<table class="table table-striped table-sm">
+    <thead>
+        <tr><td colspan="4">
+            <div class="row">
+            <div class="col">
+                {{ page_obj.start_index }}-{{ page_obj.end_index }} out of {{ page_obj.paginator.count }} 
+            </div>
+            <div class="col text-end">
+                <form method="GET" action="{% url 'author_list'%}">
+                {% csrf_token %}
+                <input type="text" size="30" name="filter1" value="{{filter1|default_if_none:''}}"><button type="submit">검색</button>
+                </form>
+            </div></div>
+        </td></tr>
+        <tr>
+        <th scope="col">한글이름</th>
+        <th scope="col">영문이름</th>
+        <th scope="col">소속</th>
+        <th scope="col">논문 수</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% if author_list %}
+        {% for author in page_obj %}
+        <tr>
+            <td class="text-cenrer"><a href="{% url 'author_detail' author.id %}">{{ author.abbreviation_k|default_if_none:'' }}</a></td>
+            <td class="text-cenrer"><a href="{% url 'author_detail' author.id %}">{{ author.abbreviation_e|default_if_none:'' }}</a></td>
+            <td class="text-cenrer">{{ author.affiliation|default_if_none:'' }}</td>
+            <td class="text-cenrer">{{ author.get_reference_count }}</td>
+        </tr>
+        {% endfor %}
+    {% else %}
+        <tr><td colspan="4" class="text-center p-3">
+            <div>No authors are available.</div>
+        </td></tr>
+    {% endif %}
+    </tbody>
+    <tfoot>
+        <tr><td colspan="4">
+            <div class="container">
+                <div class="row">
+                    <div class="col">{% include "taxologypaginator.html" %}</div>
+                    <div class="col text-end">
+                        {% if user_obj %}
+                            <a class="btn btn-primary btn-sm" role="button" href="{% url 'author_add'%}">Add</a>
+                        {% else %}
+                            <button class="btn btn-primary btn-sm" role="button" href="#" disabled>Add</button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </td></tr>
+    </tfoot>
+</table>
+{% endblock %}
