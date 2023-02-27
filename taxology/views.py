@@ -1,9 +1,10 @@
 from django.db.models import Q
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
-from .models import Taxon, TaxonRank, TaxonAuthor, Author
-from .forms import TaxonForm, TaxonAuthorForm, AuthorForm
+from .models import Taxon, TaxonRank, TaxonAuthor, Author, Reference
+from .forms import TaxonForm, TaxonAuthorForm, AuthorForm, ReferenceForm, ReferenceAuthorForm
 from django.urls import reverse, reverse_lazy
+import json
 
 from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404
@@ -20,6 +21,7 @@ def get_user_obj(request):
     return user_obj
 
 def index(request):
+    return HttpResponseRedirect(reverse('taxon_list'))
     return HttpResponse("Hello, world. You're at the taxology index.")
 
 
@@ -221,6 +223,24 @@ def taxon_delete(request, pk):
     sciname = get_object_or_404(Taxon, pk=pk)
     sciname.delete()
     return HttpResponseRedirect(reverse('taxon_list'))
+
+def taxon_view(request, pk=None):
+    user_obj = get_user_obj( request )
+    if pk is None:
+        taxon = Taxon.objects.filter(parent=None).first()
+    else:
+        taxon = get_object_or_404(Taxon, pk=pk)
+    json_data = []
+    children_data = []
+    children_list = taxon.children.all()
+    for child in children_list:
+        children_data.append( { "id": child.id, "name": child.name, "author": child.authorship, "year": child.year, "parent": child.parent_id } )
+    json_data.append( { "id": taxon.id, "name": taxon.name, "author":taxon.authorship, "year": taxon.year, "parent": taxon.parent_id, "children": children_data } )
+
+    json_str = json.dumps(json_data, separators=(',', ':'))
+
+    return render(request, 'taxology/taxon_view.html', {'taxon': taxon, 'user_obj': user_obj, 'json_str':json_str, 'children_list':children_list} )
+
 
 #@login_required(login_url=LOGIN_URL)
 def referencetaxon_edit(request,pk):

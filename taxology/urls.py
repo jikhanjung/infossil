@@ -14,6 +14,8 @@ urlpatterns = [
 
     # scientific name urls
     path('taxon_list/', views.taxon_list, name='taxon_list'),
+    path('taxon_view/', views.taxon_view, name='taxon_view'),
+    path('taxon_view/<int:pk>/', views.taxon_view, name='taxon_view'),
     path('taxon_detail/<int:pk>/', views.taxon_detail, name='taxon_detail'),
     path('taxon_add/', views.taxon_add, name='taxon_add'),
     path('taxon_edit/<int:pk>/', views.taxon_edit, name='taxon_edit'),
